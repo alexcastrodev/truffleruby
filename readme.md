@@ -12,3 +12,10 @@ docker buildx build --platform linux/arm64 -t lekito/truffleruby:latest .
 
 If you want other platforms, you can specify them using the `--platform` flag.
 
+use in your Dockerfile:
+
+```dockerfile
+FROM lekito/truffleruby:latest
+
+# Your application code here
+```
