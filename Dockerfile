@@ -54,7 +54,6 @@ RUN set -euxo pipefail \
  && dnf clean all \
  && rm -rf /var/cache/dnf
 
-## ---------------------- Download & Install GraalVM ------------------------- ##
 ENV JAVA_HOME=/opt/graalvm
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
@@ -71,26 +70,13 @@ RUN set -euxo pipefail; \
     mv /opt/graalvm-community-openjdk-${GRAALVM_VERSION}+${GRAALVM_BUILD_SUFFIX} "${JAVA_HOME}"; \
     rm /tmp/graalvm.tgz
 
-## --------------------- Download & Install TruffleRuby ---------------------- ##
-ENV PATH="/opt/truffleruby/bin:${PATH}"
+ENV RBENV_ROOT=/opt/rbenv
+ENV PATH=$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH
 
-RUN set -euxo pipefail; \
-    case "${TARGETARCH:-amd64}" in \
-      amd64|x86_64) RUBY_ARCH="amd64" ;; \
-      arm64|aarch64) RUBY_ARCH="aarch64" ;; \
-      *) echo "Unsupported architecture: ${TARGETARCH}"; exit 1 ;; \
-    esac; \
-    RUBY_TGZ="truffleruby-community-${TRUFFLERUBY_VERSION}-linux-${RUBY_ARCH}.tar.gz"; \
-    RUBY_URL="https://github.com/oracle/truffleruby/releases/download/graal-${TRUFFLERUBY_VERSION}/${RUBY_TGZ}"; \
-    curl --fail --location --retry 3 "${RUBY_URL}" -o /tmp/truffleruby.tgz; \
-    # Optional: Verify checksum
-    # echo "${TRUFFLERUBY_SHA256}  /tmp/truffleruby.tgz" | sha256sum -c -; \
-    mkdir -p /opt/truffleruby && tar -xzf /tmp/truffleruby.tgz -C /opt/truffleruby --strip-components=1; \
-    rm /tmp/truffleruby.tgz
+RUN git clone https://github.com/rbenv/rbenv.git $RBENV_ROOT \
+ && mkdir -p "$RBENV_ROOT"/plugins \
+ && git clone https://github.com/rbenv/ruby-build.git "$RBENV_ROOT"/plugins/ruby-build
 
-## ---------------------- Run TruffleRuby post-install hook ------------------ ##
-RUN /opt/truffleruby/lib/truffle/post_install_hook.sh
-
-## --------------------------- Default command ------------------------------- ##
-CMD ["irb"]
-
+RUN echo 'export RBENV_ROOT=/opt/rbenv' >> /etc/bash.bashrc \
+ && echo 'export PATH=$RBENV_ROOT/bin:$RBENV_ROOT/shims:$PATH' >> /etc/bash.bashrc \
+ && echo 'eval "$(rbenv init - bash)"' >> /etc/bash.bashrc

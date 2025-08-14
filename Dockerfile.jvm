@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:1.7
+FROM lekito/truffleruby:latest
+
+ARG GRAALVM_VERSION=24.1.1
+
+ARG TRUFFLERUBY_VERSION=24.1.1
+
+RUN bash -lc "rbenv install truffleruby+graalvm-${TRUFFLERUBY_VERSION} && rbenv global truffleruby+graalvm-${TRUFFLERUBY_VERSION}"
+
+RUN bash -lc "java -version && ruby -v && gem -v"
+
+RUN bash -lc "gem install bundler rails"
+
+# https://github.com/oracle/truffleruby/blob/master/doc/user/polyglot.md#installing-other-languages
+RUN truffleruby-polyglot-get java
+
+CMD ["irb"]

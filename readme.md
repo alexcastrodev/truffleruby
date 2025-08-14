@@ -4,11 +4,21 @@ A base Docker container for TruffleRuby, built on Oracle Linux 10 with GraalVM 2
 
 ## 🚀 Quick Start
 
-To build the Docker image, run:
+You first need to build the base image.
 
 ```bash
 docker buildx build --platform linux/arm64 -t lekito/truffleruby:latest .
 ```
+
+if you want JVM support, you can build the JVM variant:
+
+```bash
+docker buildx build --platform linux/arm64 -f Dockerfile.jvm -t lekito/truffleruby-jvm:latest .
+```
+
+See more in https://github.com/oracle/truffleruby
+
+## Usage
 
 If you want other platforms, you can specify them using the `--platform` flag.
 
