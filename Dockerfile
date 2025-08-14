@@ -47,6 +47,8 @@ RUN set -euxo pipefail \
       gcc-c++ make \
       libpq-devel \
       libyaml-devel \
+      zlib zlib-devel \
+      lz4 lz4-devel \
       openssl openssl-devel \
  && update-ca-trust \
  && dnf clean all \
