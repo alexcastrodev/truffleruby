@@ -19,3 +19,7 @@ FROM lekito/truffleruby:latest
 
 # Your application code here
 ```
+
+## Using the Image
+
+This image is only local, if you want to use it somewhere else, you can push it to a registry
